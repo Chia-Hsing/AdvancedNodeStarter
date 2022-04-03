@@ -1,0 +1,35 @@
+# 語言
+language: node_js
+# 版本
+node_js:
+    - '8'
+# operating system
+dist: trusty
+# 建立 operating system instance 時，同時安裝以下服務
+services:
+    - mongodb
+    - redis-server
+# 環境變數
+env:
+    - NODE_ENV=ci PORT=3000
+# 每次 commit project 時，travis 會忽略 node_modules file。並在每次重新執行 npm install
+# cache 是告訴 travis server，cache 住 node_modules file。
+# travis server 會 cache 住舊版本的 node_modules file，但還是會在每次執行 npm install。
+cache:
+    directories:
+        - node_modules
+        - client/node_modules
+# 我們要在 command line 執行的命令清單
+install:
+    - npm install
+    - npm run build
+# start up 我們的 server 然後 跑測試
+script:
+    # 每次執行 npm run start，同一個 shell 就無法執行其他命令。所以加上 & 表示跑 npm run start in the sub-shell(background)
+    # 若關掉 shell，所有正在執行的 sub-shell 都會同步被關閉。travis ci 有時會莫名的關閉 shell
+    # nohup 表示無論 shell 是否被關閉，都繼續執行這個 command line 建立的命令。
+    - nohup npm run start &
+    # 給 server 一些時間 settle down
+    - sleep 3
+    # 執行測試
+    - npm run test
