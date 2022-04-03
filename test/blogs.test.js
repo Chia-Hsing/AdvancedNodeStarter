@@ -89,7 +89,6 @@ describe('User is not logged in', async () => {
                 header: {
                   'Content-Type':'application/json'  
                 },
-               
             }).then(res => res.json())
         })
 
